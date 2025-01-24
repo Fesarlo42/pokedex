@@ -10,6 +10,6 @@ Los administradores pueden acceder a paginas especiales para añadir nuevos poke
 
 ## Referencias
 
-Todas los assets de pokemon (sprites, artworks y gifs) y tipos se han obtenido en el repositorio de [PokeAPI / sprites] (https://github.com/PokeAPI/sprites/tree/master)
+Todas los assets de pokemon (sprites, artworks y gifs) y tipos se han obtenido en el repositorio de [PokeAPI/sprites](https://github.com/PokeAPI/sprites/tree/master)
 
-La imágen del usuario por defecto se obtuvo de [Bulbagarden] (https://archives.bulbagarden.net/wiki/Category:Generation_I_Trainer_sprites)
+La imágen del usuario por defecto se obtuvo de [Bulbagarden](https://archives.bulbagarden.net/wiki/Category:Generation_I_Trainer_sprites)
