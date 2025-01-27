@@ -18,11 +18,15 @@ CREATE TABLE IF NOT EXISTS `pokemon_types` (
 --
 CREATE TABLE IF NOT EXISTS `pokemon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `poke_id` int(11) NOT NULL UNIQUE,
   `name` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `type_1` varchar(255),
   `type_2` varchar(255),
   `description` text NOT NULL,
+  `artwork` text(255),
+  `sprite` text(255),
+  `gif` text(255),
 
   PRIMARY KEY (`id`),
   FOREIGN KEY (`type_1`) REFERENCES `pokemon_types`(`name`),
@@ -52,10 +56,10 @@ CREATE TABLE IF NOT EXISTS `users` (
 CREATE TABLE IF NOT EXISTS `poke_teams` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `pokemon` int(11) NOT NULL,
+  `poke_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`),
-  FOREIGN KEY (`pokemon`) REFERENCES `pokemon`(`id`)
+  FOREIGN KEY (`poke_id`) REFERENCES `pokemon`(`poke_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -88,7 +92,7 @@ INSERT INTO `pokemon_types` (`id`, `name`) VALUES
 -- Dumping data for table `pokemon`
 --
 
-INSERT INTO `pokemon` (`id`, `name`, `slug`, `type_1`, `type_2`, `description`) VALUES
+INSERT INTO `pokemon` (`poke_id`, `name`, `slug`, `type_1`, `type_2`, `description`) VALUES
 (1, 'Bulbasaur', 'bulbasaur', 'Grass', 'Poison', 'Bulbasaur es un Pokémon tipo planta/veneno que lleva un bulbo en su espalda. Este bulbo almacena energía y crece conforme Bulbasaur lo hace. Vive en praderas y bosques, donde aprovecha el sol para fortalecer su bulbo y prepararse para su evolución. Es amigable, pero también puede defenderse usando látigos y polvo venenoso.'),
 (2, 'Ivysaur', 'ivysaur', 'Grass', 'Poison', 'La evolución de Bulbasaur, Ivysaur, desarrolla una flor en su bulbo. Necesita mucho sol para florecer por completo. Aunque es más lento que su preevolución debido al peso de la flor, es mucho más fuerte y puede usar látigos y esporas con gran efectividad.'),
 (3, 'Venusaur', 'venusaur', 'Grass', 'Poison', 'Venusaur es la forma final de Bulbasaur. Su gran flor emite un aroma calmante que puede reducir la tensión en otros Pokémon. Este Pokémon es poderoso y majestuoso, capaz de generar ataques devastadores como Rayo Solar y de soportar grandes daños.'),
@@ -240,3 +244,36 @@ INSERT INTO `pokemon` (`id`, `name`, `slug`, `type_1`, `type_2`, `description`) 
 (149, 'Dragonite', 'dragonite', 'Dragon', 'Flying', 'Dragonite es la evolución final de Dratini, un Pokémon de tipo Dragón y Volador. A pesar de su gran tamaño, es amable y protector. Su fuerza y velocidad lo convierten en un aliado confiable.'),
 (150, 'Mewtwo', 'mewtwo', 'Psychic', NULL, 'Mewtwo es un Pokémon de tipo Psíquico creado mediante ingeniería genética. Es increíblemente poderoso y difícil de controlar, con habilidades psíquicas que lo convierten en uno de los Pokémon más temidos.'),
 (151, 'Mew', 'mew', 'Psychic', NULL, 'Mew es un Pokémon legendario de tipo Psíquico que contiene el ADN de todos los Pokémon. Es juguetón y esquivo, capaz de volverse invisible y utilizar un vasto repertorio de movimientos únicos.');
+
+
+-- Update pokemon table with image paths
+
+DELIMITER $$
+
+CREATE PROCEDURE UpdatePokemonPaths()
+BEGIN
+    DECLARE current_id INT DEFAULT 1;
+    DECLARE max_id INT DEFAULT 151;
+    DECLARE artwork_path TEXT;
+    DECLARE sprite_path TEXT;
+    DECLARE gif_path TEXT;
+
+    WHILE current_id <= max_id DO
+        SET artwork_path = CONCAT('web/images/artworks/', current_id, '.png');
+        SET sprite_path = CONCAT('web/images/sprites/', current_id, '.png');
+        SET gif_path = CONCAT('web/images/gifs/', current_id, '.gif');
+
+        UPDATE pokemon
+        SET 
+            artwork = artwork_path,
+            sprite = sprite_path,
+            gif = gif_path
+        WHERE id = current_id;
+
+        SET current_id = current_id + 1;
+    END WHILE;
+END$$
+
+DELIMITER ;
+
+CALL UpdatePokemonPaths();
