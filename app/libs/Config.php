@@ -11,7 +11,7 @@ class Config {
     static public $db_pass     = "";
     static public $charset     = "utf-8";
 
-    // Images path
+    // Images
     static public $images_base_path     = "web/images/";
     static public $images_artworks_path = "web/images/artworks/";
     static public $images_sprites_path  = "web/images/sprites/";
@@ -20,6 +20,12 @@ class Config {
     static public $images_types_path    = "web/images/types/";
 
     static public $default_avatar = "web/images/trainers/red.php";
+
+    static public $allowed_image_extensions = ["png"];
+    static public $allowed_profile_extensions = ["png", "jpg", "jpeg"];
+    static public $allowed_animation_extensions = ["gif"];
+
+    static public $max_file_size = 5000000; // 5MB
 }
 
 ?>
