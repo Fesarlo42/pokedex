@@ -40,8 +40,6 @@ CREATE TABLE IF NOT EXISTS `pokemon` (
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL UNIQUE,
-  `email` varchar(255) NOT NULL UNIQUE,
   `password` varchar(255) NOT NULL,
   `role` varchar(255) NOT NULL,
   `profile_picture` varchar(255) NOT NULL,
