@@ -11,6 +11,19 @@ class PokeTeam extends DatabaseConnection {
   }
 
   /**
+   * Lists all Pokémon in the user's team.
+   *
+   * @return array|false Returns an array of Pokémon in the user's team, or false if the query fails.
+   */
+  public function listTeam(): array|false {
+    $query  = "SELECT * FROM pokedex.poke_teams WHERE user_id = :user_id";
+    $statement = $this->connection->prepare($query);
+    $statement->execute(['user_id' => $this->user_id]);
+
+    return $statement->fetchAll(PDO::FETCH_ASSOC);
+  }
+
+  /**
    * Adds a Pokémon to the user's team.
    *
    * @param int $poke_id The ID of the Pokémon to add.
@@ -24,13 +37,13 @@ class PokeTeam extends DatabaseConnection {
       $statement->execute(['user_id' => $this->user_id, 'poke_id' => $poke_id]);
 
       return true;
-
-    } catch (Exception $e) {
-      error_log("Add pokemon to team failed: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
-      return false;
+    } catch (PDOException $e) {
+      if ($e->getCode() == 23000) { // SQL integrity constraint violation
+          throw new PokemonNotFoundException();
+      }
+      throw $e;
     }
   }
-
 
   /**
    * Removes a Pokémon from the user's team.
@@ -40,35 +53,14 @@ class PokeTeam extends DatabaseConnection {
    * @return bool Returns true if the Pokémon is removed successfully
    */
   public function removePkmFromTeam(int $id): bool {
-    try {
-      $query  = "DELETE FROM pokedex.poke_teams WHERE id = :id";
-      $statement = $this->connection->prepare($query);
-      $statement->execute(['id' => $id]);
+    $query  = "DELETE FROM pokedex.poke_teams WHERE id = :id";
+    $statement = $this->connection->prepare($query);
+    $statement->execute(['id' => $id]);
 
+    if ($statement->rowCount() === 0) {
+      throw new PokemonNotFoundException();
+    } else {
       return true;
-
-    } catch (Exception $e) {
-      error_log("Remove pokemon from team failed: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
-      return false;
-    }
-  }
-
-  /**
-   * Lists all Pokémon in the user's team.
-   *
-   * @return array|false Returns an array of Pokémon in the user's team, or false if the query fails.
-   */
-  public function listTeam(): array|false {
-    try {
-      $query  = "SELECT * FROM pokedex.poke_teams WHERE user_id = :user_id";
-      $statement = $this->connection->prepare($query);
-      $statement->execute(['user_id' => $this->user_id]);
-
-      return $statement->fetchAll(PDO::FETCH_ASSOC);
-
-    } catch (Exception $e) {
-      error_log("List team failed: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
-      return false;
     }
   }
 
@@ -78,16 +70,10 @@ class PokeTeam extends DatabaseConnection {
    * @return bool Returns true if the team is reset successfully
    */
   public function resetTeam(): bool {
-    try {
-      $query  = "DELETE FROM pokedex.poke_teams WHERE user_id = :user_id";
-      $statement = $this->connection->prepare($query);
-      $statement->execute(['user_id' => $this->user_id]);
+    $query  = "DELETE FROM pokedex.poke_teams WHERE user_id = :user_id";
+    $statement = $this->connection->prepare($query);
+    $statement->execute(['user_id' => $this->user_id]);
 
-      return true;
-
-    } catch (Exception $e) {
-      error_log("Reset team failed: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
-      return false;
-    }
+    return true;
   }
 }

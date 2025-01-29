@@ -15,25 +15,23 @@ class Authentication extends DatabaseConnection {
    * @return bool  true if the login is successful
    */
   public function login(string $username, string $pass): bool {
-    try {
-      $query  = "SELECT * FROM pokedex.users WHERE username = :username";
-      $statement = $this->connection->prepare($query);
-      $statement->execute(['username' => $username]);
+    $query  = "SELECT * FROM pokedex.users WHERE username = :username";
+    $statement = $this->connection->prepare($query);
+    $statement->execute(['username' => $username]);
 
-      $user = $statement->fetch(PDO::FETCH_OBJ);
+    $user = $statement->fetch(PDO::FETCH_ASSOC);
 
-      if ($user && password_verify($pass, $user->password)) {
-        $_SESSION['user'] = $user['username'];
-        $_SESSION['role'] = $user['role'];
-        return true;
-      }
-
-      return false;
-
-    } catch (Exception $e) {
-      error_log("Login failed: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
-      return false;
+    if(!$user) {
+      throw new UserNotFoundException();
     }
+
+    if (!password_verify($pass, $user->password)) {
+      throw new IncorrectPasswordException();
+    }
+
+    $_SESSION['user'] = $user['user_id'];
+    $_SESSION['role'] = $user['role'];
+    return true;
   }
 
   /**
@@ -53,6 +51,15 @@ class Authentication extends DatabaseConnection {
    */
   public function isLoggedIn():bool {
     return isset($_SESSION['user']);
+  }
+
+  /**
+   * Returns the current loged in user's id.
+   *
+   * @return bool
+   */
+  public function getCurrentUserId():string {
+    return $_SESSION['user'];
   }
 
   /**
