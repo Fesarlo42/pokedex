@@ -28,13 +28,13 @@ class PokemonController {
       }
 
     } catch (Exception $e) {
-      error_log("Pokemon listing error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+      error_log("Pokemon listing error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
       header('Location: index.php?ctl=error');
       exit;
     }
 
     // get the template
-    include __DIR__ . 'web/templates/pokemonList.php';
+    include ROOT_PATH . '/web/templates/pokemonList.php';
   }
 
   /**
@@ -43,7 +43,7 @@ class PokemonController {
    * @return void
    */
   public function getPokemon(): void {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['pokemon'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pokemon'])) {
       $name = recoge('pokemon');
 
       try {
@@ -52,6 +52,7 @@ class PokemonController {
 
         if($pokemon === false) {
           $params = [
+            'pokemon' => [],
             'message' => 'No se encontró el Pokémon ' . $name . ' en la base de datos.'
           ];
         } else {
@@ -61,7 +62,7 @@ class PokemonController {
         }
 
       } catch (Exception $e) {
-        error_log("Pokemon finding error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+        error_log("Pokemon finding error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
         header('Location: index.php?ctl=error');
         exit;
       }
@@ -70,12 +71,12 @@ class PokemonController {
       $params = [
         'message' => 'Hubo un error al intentar obtener el Pokémon. Vuelve a intentarlo más tarde.'
       ];
-      include __DIR__ . 'web/templates/home.php';
+      include ROOT_PATH . '/web/templates/pokemon.php';
       exit;
     }
     
     // get the template
-    include __DIR__ . 'web/templates/pokemon.php';
+    include ROOT_PATH . '/web/templates/pokemon.php';
   }
 
   /**
@@ -86,7 +87,7 @@ class PokemonController {
    */
   public function addPokemon(): void {
     $auth = new AuthController();
-    if(!$auth->currentUserIs('admin')) {
+    if(!$auth->currentUserCan('admin')) {
       header('Location: index.php?ctl=login&error=401');
       exit;
     }
@@ -123,7 +124,7 @@ class PokemonController {
         $params = [
           'errors' => $errors,
         ];
-        include __DIR__ . 'web/templates/addPokemon.php';
+        include ROOT_PATH . '/web/templates/addPokemon.php';
         exit;
       }
 
@@ -140,7 +141,7 @@ class PokemonController {
         $params = [
           'errors' => $errors,
         ];
-        include __DIR__ . 'web/templates/addPokemon.php';
+        include ROOT_PATH . '/web/templates/addPokemon.php';
         exit;
       }
 
@@ -159,14 +160,14 @@ class PokemonController {
         }
 
       } catch (Exception $e) {
-        error_log("Pokemon adding error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+        error_log("Pokemon adding error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
         header('Location: index.php?ctl=error');
         exit;
       }
       
     }
 
-    include __DIR__ . 'web/templates/addPokemon.php';
+    include ROOT_PATH . '/web/templates/addPokemon.php';
   }
 
   /**
@@ -177,7 +178,7 @@ class PokemonController {
    */
   public function deletePokemon(): void {
     $auth = new AuthController();
-    if(!$auth->currentUserIs('admin')) {
+    if(!$auth->currentUserCan('admin')) {
       header('Location: index.php?ctl=login&error=401');
       exit;
     }
@@ -198,7 +199,7 @@ class PokemonController {
         $params = [
           'errors' => $errors,
         ];
-        include __DIR__ . 'web/templates/addPokemon.php';
+        include ROOT_PATH . '/web/templates/addPokemon.php';
         exit;
       }
 
@@ -228,12 +229,12 @@ class PokemonController {
           'message' => 'El Pokémon con el ID ' . $poke_id . ' no existe en la base de datos.'
         ];
       } catch (Exception $e) {
-        error_log("Pokemon deleting error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+        error_log("Pokemon deleting error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
         header('Location: index.php?ctl=error');
         exit;
       }
     }
 
-    include __DIR__ . 'web/templates/pokemonList.php';
+    include ROOT_PATH . '/web/templates/pokemonList.php';
   }
 } 

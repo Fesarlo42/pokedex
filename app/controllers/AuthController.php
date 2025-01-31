@@ -50,7 +50,7 @@ class AuthController {
           $params['message'] = $e->getMessage();
 
         } catch (Exception $e) {
-          error_log("Unexpected login error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+          error_log("Unexpected login error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
           header('Location: index.php?ctl=error');
           exit;
         }
@@ -63,7 +63,7 @@ class AuthController {
 
     }
 
-    require __DIR__ . '../../web/login.php';
+    require ROOT_PATH . '/web/templates/login.php';
   }
 
   /**
@@ -86,7 +86,7 @@ class AuthController {
       }
 
     } catch (Exception $e) {
-      error_log("Unexpected logout error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+      error_log("Unexpected logout error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
       header('Location: index.php?ctl=error');
       exit;
     }
@@ -107,7 +107,7 @@ class AuthController {
    * @param string $role The role to check.
    * @return bool Returns true if the user has the required role, false otherwise.
    */
-  public function currentUserIs(string $role): bool {
+  public function currentUserCan(string $role): bool {
     return $this->authModel->hasPermission($role);
   }
   

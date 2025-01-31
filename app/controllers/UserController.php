@@ -15,7 +15,7 @@ class UserController {
    */
   public function listAll(): void {
     $auth = new AuthController();
-    if(!$auth->currentUserIs('admin')) {
+    if(!$auth->currentUserCan('admin')) {
       header('Location: index.php?ctl=login&error=401');
       exit;
     }
@@ -29,13 +29,13 @@ class UserController {
       ];
 
     } catch (Exception $e) {
-      error_log("Users listing error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+      error_log("Users listing error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
       header('Location: index.php?ctl=error');
       exit;
     }
 
     // get the template
-    include __DIR__ . 'web/templates/usersList.php';
+    include ROOT_PATH . '/web/templates/usersList.php';
   }
 
    /**
@@ -44,6 +44,7 @@ class UserController {
    * @return void
    */
   public function registerUser(): void {
+    echo 'Registering user...<br/><br/>';
     $auth = new Authentication();
     if($auth->isLoggedIn()) {
       header('Location: index.php?ctl=home');
@@ -55,7 +56,11 @@ class UserController {
       'message' => ''
     ];
 
+    var_dump($_POST);
+
     if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registerBtn'])) {
+      echo 'En el if...<br/><br/>';
+
       $errors = [];
       
       // first validate texts
@@ -76,7 +81,7 @@ class UserController {
         $params = [
           'errors' => $errors,
         ];
-        include __DIR__ . 'web/templates/signup.php';
+        include ROOT_PATH . '/web/templates/signup.php';
         exit;
       }
 
@@ -90,24 +95,27 @@ class UserController {
         $params = [
           'errors' => $errors,
         ];
-        include __DIR__ . 'web/templates/signup.php';
+        include ROOT_PATH . '/web/templates/signup.php';
         exit;
       }
 
       // if all is well, create the user
       try {
+        echo 'En el try...<br/><br/>';
 
         $this->userModel->create($name, password_hash($password, PASSWORD_DEFAULT, ['cost' => 10]), 'trainer', $profile_pic);
         $params['message'] = 'Usuario creado correctamente. ¡Bienvenido a tu Pokedex!';
+        header('Location: index.php?ctl=poke_team');
       
       } catch (Exception $e) {
-        error_log("User creation error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
-        header('Location: index.php?ctl=error');
+        error_log("User creation error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
+        //header('Location: index.php?ctl=error');
+        var_dump($e->getMessage());
         exit;
       }
     }
 
-    include __DIR__ . 'web/templates/signup.php';
+    include ROOT_PATH . '/web/templates/signup.php';
   }
 
   /**
@@ -138,12 +146,12 @@ class UserController {
       $params['user'] = $user;
 
     } catch (Exception $e) {
-      error_log("User data error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+      error_log("User data error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
       header('Location: index.php?ctl=error');
       exit;
     }
 
-    include __DIR__ . 'web/templates/userData.php';
+    include ROOT_PATH . '/web/templates/userData.php';
   }
 
   /**
@@ -154,7 +162,7 @@ class UserController {
    */
   public function deleteUser(): void {
     $auth = new AuthController();
-    if(!$auth->currentUserIs('admin')) {
+    if(!$auth->currentUserCan('admin')) {
       header('Location: index.php?ctl=login&error=401');
       exit;
     }
@@ -175,7 +183,7 @@ class UserController {
         $params = [
           'errors' => $errors,
         ];
-        include __DIR__ . 'web/templates/usersList.php';
+        include ROOT_PATH . '/web/templates/usersList.php';
         exit;
       }
 
@@ -202,12 +210,12 @@ class UserController {
           'message' => 'El usuario con el ID ' . $user_id . ' no existe en la base de datos.'
         ];
       } catch (Exception $e) {
-        error_log("User deleting error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+        error_log("User deleting error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
         header('Location: index.php?ctl=error');
         exit;
       }
     }
 
-    include __DIR__ . 'web/templates/pokemonList.php';
+    include ROOT_PATH . '/web/templates/pokemonList.php';
   }
 } 

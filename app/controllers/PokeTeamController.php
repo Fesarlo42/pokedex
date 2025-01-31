@@ -27,12 +27,12 @@ class PokeTeamController {
         'pokeTeam' => $pokeTeam
       ];
     } catch (Exception $e) {
-      error_log("PokeTeam listing error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+      error_log("PokeTeam listing error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
       header('Location: index.php?ctl=error');
       exit;
     }
 
-    include __DIR__ . 'web/templates/pokeTeam.php';
+    include ROOT_PATH . '/web/templates/pokeTeam.php';
   }
 
   /**
@@ -63,7 +63,7 @@ class PokeTeamController {
         $params = [
           'errors' => $errors,
         ];
-        include __DIR__ . 'web/templates/pokemon.php';
+        include ROOT_PATH . '/web/templates/pokemon.php';
         exit;
       }
 
@@ -76,17 +76,17 @@ class PokeTeamController {
         $params = [
           'errors' => $e->getMessage(),
         ];
-        include __DIR__ . 'web/templates/pokemon.php';
+        include ROOT_PATH . '/web/templates/pokemon.php';
         exit;
         
       } catch (Exception $e) {
-        error_log("PokeTeam add error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+        error_log("PokeTeam add error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
         header('Location: index.php?ctl=error');
         exit;
       }
     }
 
-    include __DIR__ . 'web/templates/pokemon.php';
+    include ROOT_PATH . '/web/templates/pokemon.php';
   }
 
   /**
@@ -118,7 +118,7 @@ class PokeTeamController {
         $params = [
           'errors' => $errors,
         ];
-        include __DIR__ . 'web/templates/pokeTeam.php';
+        include ROOT_PATH . '/web/templates/pokeTeam.php';
         exit;
       }
 
@@ -135,13 +135,13 @@ class PokeTeamController {
           'message' => 'El Pokémon con el ID ' . $poke_id . ' no existe en la base de datos.'
         ];
       } catch (Exception $e) {
-        error_log("Remove from team error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+        error_log("Remove from team error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
         header('Location: index.php?ctl=error');
         exit;
       }
     }
 
-    include __DIR__ . 'web/templates/pokeTeam.php';
+    include ROOT_PATH . '/web/templates/pokeTeam.php';
   }
 
   /**
@@ -171,13 +171,13 @@ class PokeTeamController {
         ];
 
       } catch (Exception $e) {
-        error_log("Reset team error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/log/error_log.txt");
+        error_log("Reset team error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
         header('Location: index.php?ctl=error');
         exit;
       }
     }
 
-    include __DIR__ . 'web/templates/pokeTeam.php';
+    include ROOT_PATH . '/web/templates/pokeTeam.php';
   }
   
 } 
