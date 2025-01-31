@@ -50,7 +50,7 @@ class Authentication extends DatabaseConnection {
    * @return bool
    */
   public function isLoggedIn():bool {
-    return isset($_SESSION['user']);
+    return isset($_SESSION['user']) && $_SESSION['user'] !== 'guest';
   }
 
   /**
@@ -70,7 +70,20 @@ class Authentication extends DatabaseConnection {
    * @return bool
    */
   public function hasPermission(string $requiredRole): bool {
-    return isset($_SESSION['role']) && $_SESSION['role'] === $requiredRole;
+    switch ($requiredRole) {
+      case 'admin':
+        return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+
+      case 'trainer':
+        return isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['role'] === 'trainer');
+      
+      case 'guest':
+        return true;
+        
+      default: 
+        return false;
+    }
+
   }
     
 }

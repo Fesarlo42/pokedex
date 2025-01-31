@@ -28,11 +28,14 @@ class User extends DatabaseConnection {
    * 
    * @return bool true if the user was created successfully
    */
-  public function create(string $name, string $password, string $role, string $picture = Config::$default_avatar): bool {
+  public function create(string $name, string $password, string $role, string $picture = null): bool {
+    if (!$picture) {
+      $picture = Config::$default_avatar;
+    }
     $query  = "INSERT INTO pokedex.users (name, password, role, picture) 
                 VALUES (:name, :password, :role, :picture)";
     $statement = $this->connection->prepare($query);
-    $statement->execute(['name' => $name, 'password' => $password, 'role' => $role, 'picture' => $picture]);
+    $statement->execute(['name' => $name, 'password' => $password, 'role' => $role, 'profile_picture' => $picture]);
 
     return true;
   }
