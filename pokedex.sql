@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `pokemon` (
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `role` varchar(255) NOT NULL,
   `profile_picture` varchar(255) NOT NULL,
@@ -60,6 +61,12 @@ CREATE TABLE IF NOT EXISTS `poke_teams` (
   FOREIGN KEY (`poke_id`) REFERENCES `pokemon`(`poke_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+--
+-- Dumping data for table `users`
+--
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `profile_picture`) VALUES
+(1, 'Fernanda', 'fesarlo@gmail.com', '$2y$10$0UTcqi/ACTmeW5Txky4G8..0aO8yBU9CGrNOwyUMksziCz0kB56mW', 'admin', '../web/images/trainers/red.png')
 
 --
 -- Dumping data for table `pokemon_types`
