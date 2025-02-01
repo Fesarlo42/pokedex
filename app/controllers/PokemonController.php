@@ -8,7 +8,7 @@ class PokemonController {
   }
 
   /**
-   * Lists all Pokémon.
+   * Lists all Pokemon.
    *
    * @return void
    */
@@ -19,7 +19,7 @@ class PokemonController {
 
       if(count($pokemons) == 0) {
         $params = [
-          'message' => 'No se encontraron Pokémon en la base de datos.'
+          'message' => 'No se encontraron Pokemon en la base de datos.'
         ];
       } else {
         $params = [
@@ -38,7 +38,7 @@ class PokemonController {
   }
 
   /**
-   * Gets a Pokémon by name.
+   * Gets a Pokemon by name.
    *
    * @return void
    */
@@ -53,7 +53,7 @@ class PokemonController {
         if($pokemon === false) {
           $params = [
             'pokemon' => [],
-            'message' => 'No se encontró el Pokémon ' . $name . ' en la base de datos.'
+            'message' => 'No se encontró el Pokemon ' . $name . ' en la base de datos.'
           ];
         } else {
           $params = [
@@ -69,7 +69,7 @@ class PokemonController {
       
     } else {
       $params = [
-        'message' => 'Hubo un error al intentar obtener el Pokémon. Vuelve a intentarlo más tarde.'
+        'message' => 'Hubo un error al intentar obtener el Pokemon. Vuelve a intentarlo más tarde.'
       ];
       include ROOT_PATH . '/web/templates/pokemon.php';
       exit;
@@ -80,7 +80,7 @@ class PokemonController {
   }
 
   /**
-   * Adds a new Pokémon.
+   * Adds a new Pokemon.
    * Checks for admin role
    *
    * @return void
@@ -88,15 +88,15 @@ class PokemonController {
   public function addPokemon(): void {
     $auth = new AuthController();
     if(!$auth->currentUserCan('admin')) {
-      header('Location: index.php?ctl=login&error=401');
+      header('Location: index.php?ctl=home&error=401');
       exit;
     }
 
-    $params = [
-      'errors' => [],
-    ];
+    $params['types'] = $this->pokemonModel->getPokeTypes();
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_pokemon'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addPokemonBtn'])) {
+      $params['errors'] = [];
+
       // first validate texts
       $poke_id = recoge('poke_id');
       $name    = recoge('poke_name');
@@ -111,20 +111,22 @@ class PokemonController {
       $errors = [];
       cNum($poke_id, 'poke_id', $errors, 1);
       if(!$name) {
-        $errors['name'] = 'El nombre del Pokémon es requerido.';
+        $errors['name'] = 'El nombre del Pokemon es requerido.';
       }
       cTexto($name, 'poke_name', $errors, 30, 3);
       cCheck([$type_1], 'type_1', $errors, $this->pokemonModel->getPokeTypes(), true);
       if (isset($type_2)) {
         cCheck([$type_2], 'type_2', $errors, $this->pokemonModel->getPokeTypes(), false);
       }
-      cTexto($description, 'description', $errors, 500, 10);
+      
+      if(!isset($_POST['description'])) {
+        $errors['description'] = "La descripción es obligatoria.";
+      }
 
       if(!empty($errors)) {
-        $params = [
-          'errors' => $errors,
-        ];
-        include ROOT_PATH . '/web/templates/addPokemon.php';
+        $params['errors'] = $errors;
+
+        include ROOT_PATH . '/web/templates/pokemonAdd.php';
         exit;
       }
 
@@ -138,25 +140,24 @@ class PokemonController {
       }
 
       if(!empty($errors)) {
-        $params = [
-          'errors' => $errors,
-        ];
-        include ROOT_PATH . '/web/templates/addPokemon.php';
+        $params['errors'] = $errors;
+
+        include ROOT_PATH . '/web/templates/pokemonAdd.php';
         exit;
       }
 
       try {
+        // create slug
+        $slug = strtolower($name);
+        $slug = str_replace(' ', '-', $slug);
+
         // add the pokemon
-        $result = $this->pokemonModel->add($poke_id, $name, $type_1, $type_2, $description, $artwork_path, $sprite_path, $gif_path);
+        $result = $this->pokemonModel->add($poke_id, $name, $slug, $type_1, $type_2, $description, $artwork_path, $sprite_path, $gif_path);
 
         if($result === false) {
-          $params = [
-            'message' => 'Hubo un error al intentar agregar el Pokémon. Vuelve a intentarlo más tarde.'
-          ];
+          $params['message'] = 'Hubo un error al intentar agregar el Pokemon. Vuelve a intentarlo más tarde.';
         } else {
-          $params = [
-            'message' => 'El Pokémon ' . $name . ' fue agregado exitosamente.'
-          ];
+          $params['message'] = 'El Pokemon ' . $name . ' fue agregado exitosamente.';
         }
 
       } catch (Exception $e) {
@@ -167,11 +168,11 @@ class PokemonController {
       
     }
 
-    include ROOT_PATH . '/web/templates/addPokemon.php';
+    include ROOT_PATH . '/web/templates/pokemonAdd.php';
   }
 
   /**
-   * Deletes a Pokémon by ID.
+   * Deletes a Pokemon by ID.
    * Checks for admin role
    *
    * @return void
@@ -179,7 +180,7 @@ class PokemonController {
   public function deletePokemon(): void {
     $auth = new AuthController();
     if(!$auth->currentUserCan('admin')) {
-      header('Location: index.php?ctl=login&error=401');
+      header('Location: index.php?ctl=home&error=401');
       exit;
     }
 
@@ -199,7 +200,7 @@ class PokemonController {
         $params = [
           'errors' => $errors,
         ];
-        include ROOT_PATH . '/web/templates/addPokemon.php';
+        include ROOT_PATH . '/web/templates/pokemonAdd.php';
         exit;
       }
 
@@ -221,12 +222,12 @@ class PokemonController {
         */
         
         $params = [
-          'message' => 'El Pokémon se ha borrado exitosamente.'
+          'message' => 'El Pokemon se ha borrado exitosamente.'
         ];
 
       } catch (PokemonNotFoundException $e) {
         $params = [
-          'message' => 'El Pokémon con el ID ' . $poke_id . ' no existe en la base de datos.'
+          'message' => 'El Pokemon con el ID ' . $poke_id . ' no existe en la base de datos.'
         ];
       } catch (Exception $e) {
         error_log("Pokemon deleting error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");

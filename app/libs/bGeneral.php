@@ -364,11 +364,11 @@ function cFile(string $nombre, array &$errores, array $extensionesValidas, strin
              * Comprobamos si el directorio pasado es válido
              */
             if (is_dir($directorio)) {
-                /**
-             * Tenemos que buscar un nombre único para guardar el fichero de manera definitiva.
-             * Podemos hacerlo de diferentes maneras, en este caso se hace añadiendo microtime() al nombre del fichero 
-             * si ya existe un archivo guardado con ese nombre.
-             * */
+              /**
+               * Tenemos que buscar un nombre único para guardar el fichero de manera definitiva.
+               * Podemos hacerlo de diferentes maneras, en este caso se hace añadiendo microtime() al nombre del fichero 
+               * si ya existe un archivo guardado con ese nombre.
+               * */
                 $nombreArchivo = is_file($directorio . DIRECTORY_SEPARATOR . $nombreArchivo) ? time() . $nombreArchivo : $nombreArchivo;
                 $nombreCompleto = $directorio . DIRECTORY_SEPARATOR . $nombreArchivo;
                 /**
@@ -378,8 +378,6 @@ function cFile(string $nombre, array &$errores, array $extensionesValidas, strin
                     /**
                      * Si todo es correcto devuelve la ruta y nombre del fichero como se ha guardado
                      */
-
-
                     return $nombreCompleto;
                 } else {
                     $errores["$nombre"] = "Ha habido un error al subir el fichero";

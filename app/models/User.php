@@ -22,20 +22,18 @@ class User extends DatabaseConnection {
    * Creates a new user.
    *
    * @param string $name
+   * @param string $username
    * @param string $password
    * @param string $role
-   * @param string $picture optional default to the defaut avatar
+   * @param string $picture
    * 
    * @return bool true if the user was created successfully
    */
-  public function create(string $name, string $password, string $role, string $picture = null): bool {
-    if (!$picture) {
-      $picture = Config::$default_avatar;
-    }
-    $query  = "INSERT INTO pokedex.users (name, password, role, picture) 
-                VALUES (:name, :password, :role, :picture)";
+  public function create(string $name, string $email, string $password, string $role, string $picture): bool {
+    $query  = "INSERT INTO pokedex.users (name, email, password, role, profile_picture) 
+                VALUES (:name, :email, :password, :role, :profile_picture)";
     $statement = $this->connection->prepare($query);
-    $statement->execute(['name' => $name, 'password' => $password, 'role' => $role, 'profile_picture' => $picture]);
+    $statement->execute(['name' => $name, 'email' => $email, 'password' => $password, 'role' => $role, 'profile_picture' => $picture]);
 
     return true;
   }
@@ -48,7 +46,7 @@ class User extends DatabaseConnection {
    * @return array|false An array with the user information or false if the user is not found
    */
   public function get(string $id): array|false {
-    $query  = "SELECT id, name, role, profile_picture, created_at FROM pokedex.users WHERE id = :id";
+    $query  = "SELECT id, name, email, role, profile_picture, created_at FROM pokedex.users WHERE id = :id";
     $statement = $this->connection->prepare($query);
     $statement->execute(['id' => $id]);
 
@@ -73,5 +71,26 @@ class User extends DatabaseConnection {
       return true;
     }
   }
+
+  /**
+   * Changes a user role
+   * 
+   * @param string $user_id
+   * @param string $new_role
+   * 
+   * @return bool Returns true if the role is updated successfully
+   */
+  public function updateRole(string $user_id, string $new_role): bool {
+    $query = "UPDATE pokedex.users SET role = :role WHERE id = :id";
+    $statement = $this->connection->prepare($query);
+    $statement->execute(['id' => $user_id, 'role' => $new_role]);
+
+    if ($statement->rowCount() > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }
 ?>

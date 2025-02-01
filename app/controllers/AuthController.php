@@ -14,36 +14,34 @@ class AuthController {
    * @return void
    */
   public function login(): void {
-    $params = array(
-      'username' => '',
-      'password' => '',
-      'message'  => ''
-    );
+
+    // display success message from people who come form registration form
+    if(isset($_GET['reg']) && $_GET['reg'] === 'success') {
+      $params['message'] = 'Usuario creado correctamente. Accede a tu cuenta y empieza a crear tu equipo Pokemon.';
+    }
 
     if($this->authModel->isLoggedIn()) {
       header('Location: index.php?ctl=home');
       exit;
     }
 
-    if(isset($_GET['error'])) {
-      $error = recoge('error');
-      if($error === '401') {
-        $params['message'] = 'No tienes permisos para acceder a esta página.';
-      }
-    }
-
     if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['loginBtn'])) {
-      $username = recoge('username');
+      $params = array(
+        'email' => '',
+        'password' => '',
+        'message'  => ''
+      );
+      
+      $email = recoge('email');
       $password = recoge('password');
 
-      if(cUser($username, "username", $params)) {
+      if(filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
         try {
 
-          if ($this->authModel->login($username, $password)) {
-            header('Location: index.php?ctl=dashboard');
+          if ($this->authModel->login($email, $password)) {
+            header('Location: index.php?ctl=poke_team');
             exit;
-
           }
 
         } catch (UserNotFoundException | IncorrectPasswordException $e) {
@@ -56,10 +54,10 @@ class AuthController {
         }
 
       } else {
-        $params['message'] = 'Formato de nombre de usuario invalido.';
+        $params['message'] = 'Formato de correo electrónico invalido.';
       }
 
-      $params['username'] = $username;
+      $params['email'] = $email;
 
     }
 

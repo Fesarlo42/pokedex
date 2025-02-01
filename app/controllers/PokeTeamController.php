@@ -9,7 +9,7 @@ class PokeTeamController {
   }
 
   /**
-   * Lists all Pokémon in the user's team.
+   * Lists all Pokemon in the user's team.
    * Checks for logged in user
    *
    * @return void
@@ -17,15 +17,50 @@ class PokeTeamController {
   public function listPokeTeam(): void {
     $auth = new AuthController();
     if(!$auth->isLoggedIn()) {
-      header('Location: index.php?ctl=login&error=401');
+      header('Location: index.php?ctl=home&error=401');
       exit;
+    }
+
+    // display messages for adding, removind and reseting
+    if(isset($_GET['msg'])) {
+      $msg = recoge('msg');
+      
+      switch($msg) {
+        case 'add_id':
+          $params['message'] = 'No se puede añadir ese pokemon.';
+          break;
+        case 'add_404':
+          $params['message'] = 'No hemos encontrado ese pokemon para añadirlo.';
+          break;
+        case 'add_500':
+          $params['message'] = 'Pokemon añadido a tu equipo.';
+          break;
+        case 'rmv_id':
+          $params['message'] = 'No se puede remover ese pokemon.';
+          break;
+        case 'rmv_404':
+          $params['message'] = 'No hemos encontrado ese pokemon para removerlo.';
+          break;
+        case 'rmv_500':
+          $params['message'] = 'Pokemon removido del equipo.';
+          break;
+        case 'rst_500':
+          $params['message'] = 'Equipo redefinido con éxito.';
+          break;
+      }
+    
     }
 
     try {
       $pokeTeam = $this->pokeTeamModel->listTeam();
-      $params = [
-        'pokeTeam' => $pokeTeam
-      ];
+
+      // Also call the for a the list of all pokemon to make the select in the add pokemon 
+      $pkmModel = new Pokemon();
+      $pokemons = $pkmModel->listAll();
+
+      $params['pokeTeam'] = $pokeTeam;
+      $params['pokemons'] = $pokemons;
+      
     } catch (Exception $e) {
       error_log("PokeTeam listing error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
       header('Location: index.php?ctl=error');
@@ -36,7 +71,7 @@ class PokeTeamController {
   }
 
   /**
-   * Adds a Pokémon to the user's team.
+   * Adds a Pokemon to the user's team.
    * Checks for logged in user
    *
    * @return void
@@ -44,17 +79,17 @@ class PokeTeamController {
   public function addPkmToTeam(): void {
     $auth = new AuthController();
     if(!$auth->isLoggedIn()) {
-      header('Location: index.php?ctl=login&error=401');
+      header('Location: index.php?ctl=home&error=401');
       exit;
     }
 
-    $params = [
-      'errors' => [],
-      'message' => ''
-    ];
-
-    if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_team'])) {
-      $errores = [];
+    if($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addToTeam'])) {
+      $params = [
+        'errors' => [],
+        'message' => ''
+      ];
+      
+      $errors = [];
 
       $poke_id = recoge('poke_id');
       cNum($poke_id, 'poke_id', $errors);
@@ -63,20 +98,19 @@ class PokeTeamController {
         $params = [
           'errors' => $errors,
         ];
-        include ROOT_PATH . '/web/templates/pokemon.php';
+        header('Location: index.php?ctl=poke_team&msg=add_id');
         exit;
       }
 
       try {
 
         $this->pokeTeamModel->addPkmToTeam($poke_id);
-        $params['message'] = '¡Pokemon añadido al equipo!';
 
-      } catch(PokemonNotFoundException $e) {
+      } catch( PokemonNotFoundException $e ) {
         $params = [
-          'errors' => $e->getMessage(),
+          'message' => $e->getMessage(),
         ];
-        include ROOT_PATH . '/web/templates/pokemon.php';
+        header('Location: index.php?ctl=poke_team&msg=add_404');
         exit;
         
       } catch (Exception $e) {
@@ -86,11 +120,11 @@ class PokeTeamController {
       }
     }
 
-    include ROOT_PATH . '/web/templates/pokemon.php';
+    header('Location: index.php?ctl=poke_team&msg=add_500');
   }
 
   /**
-   * Removes a Pokémon from the user's team.
+   * Removes a Pokemon from the user's team.
    * Checks for logged in user
    *
    * @return void
@@ -98,16 +132,11 @@ class PokeTeamController {
   public function removePkmFromTeam(): void {
     $auth = new AuthController();
     if(!$auth->isLoggedIn()) {
-      header('Location: index.php?ctl=login&error=401');
+      header('Location: index.php?ctl=home&error=401');
       exit;
     }
 
-    $params = [
-      'errors' => [],
-      'message' => ''
-    ];
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_from_team'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['deleteFromTeam'])) {
       // first validate inputs
       $poke_id = recoge('poke_id');
 
@@ -118,22 +147,17 @@ class PokeTeamController {
         $params = [
           'errors' => $errors,
         ];
-        include ROOT_PATH . '/web/templates/pokeTeam.php';
+        header('Location: index.php?ctl=poke_team&msg=rmv_id');
         exit;
       }
 
       try {
         // delete the pokemon
-        $result = $this->pokeTeamModel->removePkmFromTeam($poke_id);
-
-        $params = [
-          'message' => 'El Pokémon se ha borrado del equipo.'
-        ];
+        $this->pokeTeamModel->removePkmFromTeam($poke_id);
 
       } catch (PokemonNotFoundException $e) {
-        $params = [
-          'message' => 'El Pokémon con el ID ' . $poke_id . ' no existe en la base de datos.'
-        ];
+        header('Location: index.php?ctl=poke_team&msg=rmv_404');
+
       } catch (Exception $e) {
         error_log("Remove from team error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
         header('Location: index.php?ctl=error');
@@ -141,11 +165,11 @@ class PokeTeamController {
       }
     }
 
-    include ROOT_PATH . '/web/templates/pokeTeam.php';
+    header('Location: index.php?ctl=poke_team&msg=rmv_500');
   }
 
   /**
-   * Resets the user's team by removing all Pokémon.
+   * Resets the user's team by removing all Pokemon.
    * Checks for logged in user
    *
    * @return void
@@ -153,22 +177,14 @@ class PokeTeamController {
   public function resetPokeTeam(): void {
     $auth = new AuthController();
     if(!$auth->isLoggedIn()) {
-      header('Location: index.php?ctl=login&error=401');
+      header('Location: index.php?ctl=home&error=401');
       exit;
     }
 
-    $params = [
-      'message' => ''
-    ];
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_team'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resetTeamBtn'])) {
       try {
         // delete the pokemon
-        $result = $this->pokeTeamModel->resetTeam();
-
-        $params = [
-          'message' => 'El equipo se ha borrado con exito.'
-        ];
+        $this->pokeTeamModel->resetTeam();
 
       } catch (Exception $e) {
         error_log("Reset team error: " . $e->getMessage() . microtime() . PHP_EOL, 3, "../app/logs/error_logs.txt");
@@ -177,7 +193,7 @@ class PokeTeamController {
       }
     }
 
-    include ROOT_PATH . '/web/templates/pokeTeam.php';
+    header('Location: index.php?ctl=poke_team&msg=rst_500');
   }
   
 } 

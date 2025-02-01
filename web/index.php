@@ -42,11 +42,16 @@ $routes = [
   'signup'       => ['controller' => 'UserController',     'action' => 'registerUser', 'user_role' => 'guest'],
   'error'        => ['controller' => 'BaseController',     'action' => 'error',        'user_role' => 'guest'],
   
-  'poke_team'    => ['controller' => 'PokeTeamController', 'action' => 'listPokeTeam', 'user_role' => 'trainer'],
-  'logout'       => ['controller' => 'AuthController',     'action' => 'logout',       'user_role' => 'trainer'],
+  'poke_team'        => ['controller' => 'PokeTeamController', 'action' => 'listPokeTeam',      'user_role' => 'trainer'],
+  'poke_team_remove' => ['controller' => 'PokeTeamController', 'action' => 'removePkmFromTeam', 'user_role' => 'trainer'],
+  'poke_team_add'    => ['controller' => 'PokeTeamController', 'action' => 'addPkmToTeam',      'user_role' => 'trainer'],
+  'poke_team_reset'  => ['controller' => 'PokeTeamController', 'action' => 'resetPokeTeam',     'user_role' => 'trainer'],
+  'logout'           => ['controller' => 'AuthController',     'action' => 'logout',            'user_role' => 'trainer'],
 
-  'add_pokemon'  => ['controller' => 'PokemonController',  'action' => 'addPokemon',   'user_role' => 'admin'],
-  'user_list'    => ['controller' => 'UserController',     'action' => 'listAll',      'user_role' => 'admin'],
+  'add_pokemon'      => ['controller' => 'PokemonController',  'action' => 'addPokemon',     'user_role' => 'admin'],
+  'user_list'        => ['controller' => 'UserController',     'action' => 'listAll',        'user_role' => 'admin'],
+  'user_list_edit'   => ['controller' => 'UserController',     'action' => 'updateUserRole', 'user_role' => 'admin'],
+  'user_list_remove' => ['controller' => 'UserController',     'action' => 'deleteUser',     'user_role' => 'admin'],
 ];
 
 if (isset($_GET['ctl']) && isset($routes[$_GET['ctl']])) {
@@ -65,7 +70,7 @@ if (isset($_GET['ctl']) && isset($routes[$_GET['ctl']])) {
       $controller->$action();
 
     } else {
-      header('Location: index.php?ctl=home');
+      header('Location: index.php?ctl=home&error=401');
     }
   }
 

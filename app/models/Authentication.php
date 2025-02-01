@@ -9,15 +9,15 @@ class Authentication extends DatabaseConnection {
   /**
    * Logs in a user by verifying their username and password.
    *
-   * @param string $username
+   * @param string $email
    * @param string $pass
    * 
    * @return bool  true if the login is successful
    */
-  public function login(string $username, string $pass): bool {
-    $query  = "SELECT * FROM pokedex.users WHERE username = :username";
+  public function login(string $email, string $pass): bool {
+    $query  = "SELECT * FROM pokedex.users WHERE email = :email";
     $statement = $this->connection->prepare($query);
-    $statement->execute(['username' => $username]);
+    $statement->execute(['email' => $email]);
 
     $user = $statement->fetch(PDO::FETCH_ASSOC);
 
@@ -25,12 +25,16 @@ class Authentication extends DatabaseConnection {
       throw new UserNotFoundException();
     }
 
-    if (!password_verify($pass, $user->password)) {
+    if (!password_verify($pass, $user['password'])) {
       throw new IncorrectPasswordException();
     }
 
-    $_SESSION['user'] = $user['user_id'];
+    $_SESSION['user'] = $user['id'];
     $_SESSION['role'] = $user['role'];
+
+    // add cookie to check how long the user's been logged in
+    setcookie('login_time', time(), time() + 86400);
+    
     return true;
   }
 
@@ -41,6 +45,7 @@ class Authentication extends DatabaseConnection {
    */  
   public function logout(): bool {
     session_destroy();
+    setcookie('login_time', '', time() - 3600);
     return true;
   }
 

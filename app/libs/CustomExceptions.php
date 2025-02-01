@@ -9,5 +9,5 @@ class IncorrectPasswordException extends Exception {
 }
 
 class PokemonNotFoundException extends Exception {
-    protected $message = 'Pokémon no encontrado';
+    protected $message = 'Pokemon no encontrado';
 }

@@ -11,12 +11,14 @@ class PokeTeam extends DatabaseConnection {
   }
 
   /**
-   * Lists all Pokémon in the user's team.
+   * Lists all Pokemon in the user's team.
    *
-   * @return array|false Returns an array of Pokémon in the user's team, or false if the query fails.
+   * @return array|false Returns an array of Pokemon in the user's team, or false if the query fails.
    */
   public function listTeam(): array|false {
-    $query  = "SELECT * FROM pokedex.poke_teams WHERE user_id = :user_id";
+    $query  = "SELECT team.id, team.poke_id, pokemon.name, pokemon.gif FROM pokedex.poke_teams as team
+      JOIN pokedex.pokemon as pokemon ON
+      team.poke_id = pokemon.id WHERE team.user_id = :user_id";
     $statement = $this->connection->prepare($query);
     $statement->execute(['user_id' => $this->user_id]);
 
@@ -24,11 +26,11 @@ class PokeTeam extends DatabaseConnection {
   }
 
   /**
-   * Adds a Pokémon to the user's team.
+   * Adds a Pokemon to the user's team.
    *
-   * @param int $poke_id The ID of the Pokémon to add.
+   * @param int $poke_id The ID of the Pokemon to add.
    * 
-   * @return bool Returns true if the Pokémon is added successfully
+   * @return bool Returns true if the Pokemon is added successfully
    */
   public function addPkmToTeam(int $poke_id): bool {
     try {
@@ -46,11 +48,11 @@ class PokeTeam extends DatabaseConnection {
   }
 
   /**
-   * Removes a Pokémon from the user's team.
+   * Removes a Pokemon from the user's team.
    *
    * @param int $id The ID of the team entry to remove.
    * 
-   * @return bool Returns true if the Pokémon is removed successfully
+   * @return bool Returns true if the Pokemon is removed successfully
    */
   public function removePkmFromTeam(int $id): bool {
     $query  = "DELETE FROM pokedex.poke_teams WHERE id = :id";
@@ -65,7 +67,7 @@ class PokeTeam extends DatabaseConnection {
   }
 
   /**
-   * Resets the user's team by removing all Pokémon.
+   * Resets the user's team by removing all Pokemon.
    *
    * @return bool Returns true if the team is reset successfully
    */
