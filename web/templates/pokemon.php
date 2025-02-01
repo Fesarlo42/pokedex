@@ -8,7 +8,7 @@ ob_start();
     <?php if(isset($params['pokemon']) && count($params['pokemon']) !== 0): ?>
     <div class="col-md-6 text-center">
       <div class="position-relative">
-        <img src="<?php echo '../' . $pokemon['artwork']; ?>" alt="<?php echo $pokemon['name'] ?> Oficial Artwork" class="img-fluid mb-3">
+        <img src="<?php echo $pokemon['artwork']; ?>" alt="<?php echo $pokemon['name'] ?> Oficial Artwork" class="img-fluid mb-3">
       </div>
     </div>
 

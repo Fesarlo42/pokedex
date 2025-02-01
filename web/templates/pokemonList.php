@@ -21,7 +21,7 @@ ob_start();
           <?php foreach ($pokemons as $pokemon) : ?>
             <tr>
               <td style="width: 10%;"><?php echo '#' . $pokemon['id']; ?></td>
-              <td style="width: 10%;"><img src="<?php echo '../' . $pokemon['sprite']; ?>" alt="<?php echo $pokemon['name']; ?> Sprite" width="50px"></td>
+              <td style="width: 10%;"><img src="<?php echo $pokemon['sprite']; ?>" alt="<?php echo $pokemon['name']; ?> Sprite" width="50px"></td>
               <td>
                 <form action="index.php?ctl=pokemon" method="POST" class="d-flex justify-content-center">
                   <button type="submit" name="pokemon" value="<?php echo $pokemon['name']; ?>" class="btn btn-link p-0">

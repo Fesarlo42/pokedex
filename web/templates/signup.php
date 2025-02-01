@@ -1,6 +1,4 @@
 <?php
-var_dump($params);
-
 
 ob_start();
 
@@ -21,6 +19,10 @@ foreach (Config::$allowed_profile_extensions as $extension) {
             <div class="mb-3">
               <label for="name" class="form-label">Nombre *</label>
               <input type="text" name="name" id="name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">E-mail *</label>
+              <input type="text" name="email" id="email" class="form-control" required>
             </div>
             <div class="mb-3">
               <label for="password" class="form-label">Contraseña *</label>

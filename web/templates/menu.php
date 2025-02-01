@@ -34,7 +34,7 @@ $auth = new AuthController();
       </li>
         <?php if($auth->currentUserCan('admin')): ?>
         <li class="nav-item">
-          <a class="nav-link" href="index.php?ctl=add_pokemon">Adicionar pokemon</a>
+          <a class="nav-link" href="index.php?ctl=add_pokemon">Añadir pokemon</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="index.php?ctl=user_list">Administrar usuarios</a>
@@ -47,10 +47,15 @@ $auth = new AuthController();
     </ul>
     
     <div class="d-flex align-items-center ms-auto">
-      <?php if($auth->isLoggedIn()): ?>
-      <span class="me-2">John Doe</span>
+      <?php if($auth->isLoggedIn()): 
+        
+        $userContrl = new UserController();
+        $user = $userContrl->getUserData();
+
+        ?>
+      <span class="me-2">Bienvenido <?php echo $user["role"] == 'admin' ? 'administrador' : 'entrenador'; ?> <?php echo $user["name"]; ?></span>
       <img
-        src="https://via.placeholder.com/40"
+        src="<?php echo $user["profile_picture"]; ?>"
         alt="Profile Picture"
         class="rounded-circle"
         width="40"

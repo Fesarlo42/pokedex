@@ -9,7 +9,7 @@ ob_start();
   <div class="row justify-content-center align-items-center">
     <img src="../web/images/error.png" alt="Error fatal" style="width:400px;">
       <h2 class="text-center">Se ha producido un error fatal</h2>
-      <p class="text-center"><a href="/index?ctl=home">Volver al inicio</a></p>
+      <p class="text-center"><a href="<?php echo $_SERVER['SCRIPT_NAME']; ?>?ctl=home">Volver al inicio</a></p>
   </div>
 </div>
 
