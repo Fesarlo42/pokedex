@@ -1,10 +1,30 @@
+html,
+body {
+  height: 100%;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+}
+
 #home input[type='text'] {
   font-size: 18px;
   padding: 10px;
 }
 
 #pokemon > div,
-#pokemon_list > div {
+#pokemon_list > div,
+#poke_team > div {
   margin: 0 auto;
   width: 800px;
+}
+
+#addPokemonModal {
+  width: 100% !important;
 }
