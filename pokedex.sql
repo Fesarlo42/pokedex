@@ -264,9 +264,9 @@ BEGIN
     DECLARE gif_path TEXT;
 
     WHILE current_id <= max_id DO
-        SET artwork_path = CONCAT('web/images/artworks/', current_id, '.png');
-        SET sprite_path = CONCAT('web/images/sprites/', current_id, '.png');
-        SET gif_path = CONCAT('web/images/gifs/', current_id, '.gif');
+        SET artwork_path = CONCAT('../web/images/artworks/', current_id, '.png');
+        SET sprite_path = CONCAT('../web/images/sprites/', current_id, '.png');
+        SET gif_path = CONCAT('../web/images/gifs/', current_id, '.gif');
 
         UPDATE pokemon
         SET 
