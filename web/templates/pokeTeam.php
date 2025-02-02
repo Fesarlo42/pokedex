@@ -58,7 +58,7 @@ ob_start();
                 <select name="poke_id" class="form-select w-auto">
                   <option value="" disabled selected>Selecciona un Pokemon</option>
                     <?php foreach ($params['pokemons'] as $pkm): ?>
-                      <option value="<?php echo $pkm['id']; ?>"><?php echo $pkm['name']; ?></option>
+                      <option value="<?php echo $pkm['poke_id']; ?>"><?php echo $pkm['name']; ?></option>
                     <?php endforeach; ?>
                 </select>
                 <?php endif;?>
